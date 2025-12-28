@@ -480,32 +480,9 @@ ${renewHTML}<div class="fn__hr--b"></div>`;
         if (window.siyuan.config.system.container === "ios") {
             return;
         }
+        // Cracked: Hide VIP crown icon from toolbar
         let html = "";
-        if (window.siyuan.config.account.displayVIP) {
-            if (window.siyuan.user) {
-                if (window.siyuan.user.userSiYuanProExpireTime === -1) { // 终身会员
-                    html = `<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.account12}">${Constants.SIYUAN_IMAGE_VIP}</div>`;
-                } else if (window.siyuan.user.userSiYuanProExpireTime > 0) { // 订阅中
-                    if (window.siyuan.user.userSiYuanSubscriptionPlan === 2) { // 试用订阅
-                        html = `<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.account3}"><svg><use xlink:href="#iconVIP"></use></svg></div>`;
-                    } else { // 正常订阅
-                        html = `<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.account10}"><svg class="ft__secondary"><use xlink:href="#iconVIP"></use></svg></div>`;
-                    }
-                } else if (window.siyuan.user.userSiYuanSubscriptionStatus === -1) { // 未订阅
-                    html = `<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.freeSub}"><svg class="ft__error"><use xlink:href="#iconVIP"></use></svg></div>`;
-                }
-                if (window.siyuan.user.userSiYuanOneTimePayStatus === 1) { // 一次性付费功能特性
-                    html += `<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.onepay}"><svg class="ft__success"><use xlink:href="#iconVIP"></use></svg></div>`;
-                }
-            } else { // 未登录
-                html = `<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.freeSub}"><svg class="ft__error"><use xlink:href="#iconVIP"></use></svg></div>`;
-            }
-        }
-        if (window.siyuan.config.account.displayTitle && window.siyuan.user) {
-            window.siyuan.user.userTitles.forEach(item => {
-                html += `<div class="toolbar__item ariaLabel" aria-label="${item.name}：${item.desc}">${item.icon}</div>`;
-            });
-        }
+        // All VIP/subscription display logic removed
         document.getElementById("toolbarVIP").innerHTML = html;
     }
 };
