@@ -1,2 +1,7 @@
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - electron-winstaller
+  - esbuild
+
 onlyBuiltDependencies:
   - electron

@@ -1,0 +1,95 @@
+name: Build and Release Cracked SiYuan
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install dependencies
+        run: |
+          cd app
+          pnpm install --no-frozen-lockfile
+
+      - name: Build frontend
+        run: |
+          cd app
+          pnpm run build
+
+      - name: Build kernel
+        run: |
+          cd kernel
+          export CGO_ENABLED=1
+          export GOOS=linux
+          export GOARCH=amd64
+          go build --tags 'fts5' -v -o '../app/kernel-linux/SiYuan-Kernel' -ldflags '-s -w' .
+
+      - name: Package Linux distributions
+        run: |
+          cd app
+          pnpm run dist-linux
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            app/build/siyuan-*-linux.deb
+            app/build/siyuan-*-linux.AppImage
+            app/build/siyuan-*-linux.tar.gz
+          body: |
+            ## 🔓 Cracked SiYuan Release
+            
+            ### ✨ Unlocked Features
+            - ✅ S3/WebDAV sync (no subscription required)
+            - ✅ All premium features unlocked
+            - ✅ No cloud account dependency
+            
+            ### 📦 Installation
+            
+            **Debian/Ubuntu:**
+            ```bash
+            sudo dpkg -i siyuan-*-linux.deb
+            ```
+            
+            **AppImage:**
+            ```bash
+            chmod +x siyuan-*-linux.AppImage
+            ./siyuan-*-linux.AppImage
+            ```
+            
+            **tar.gz:**
+            ```bash
+            tar -xzf siyuan-*-linux.tar.gz
+            cd SiYuan
+            ./siyuan
+            ```
+            
+            ### ⚠️ Disclaimer
+            This is a modified version for personal learning purposes only.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
